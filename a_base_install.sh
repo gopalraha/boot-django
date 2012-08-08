@@ -25,7 +25,9 @@ export cwd=`pwd`
 
 pushd ~
 django-admin.py startproject $project
+
 mkdir ~/$project/$project/static
+ln -s /usr/lib/python2.7/dist-packages/django/contrib/admin/media ~/$project/$project/static/admin
 
 echo "httpd.conf:"
 sed "s/project/$project/g" < $cwd/httpd.conf | sudo tee /etc/apache2/httpd.conf
@@ -33,9 +35,6 @@ sed "s/project/$project/g" < $cwd/httpd.conf | sudo tee /etc/apache2/httpd.conf
 mv ~/$project/$project/wsgi.py ~/$project/$project/wsgi.py.bak
 echo "~/$project/$project/wsgi.py"
 sudo sed "s/project/$project/g" < $cwd/wsgi.py | tee ~/$project/$project/wsgi.py
-
-mkdir ~/$project/$project/static/admin
-ln -s /usr/lib/python2.7/dist-packages/django/contrib/admin/media ~/$project/$project/static/admin
 
 cd ~/$project
 python manage.py startapp $application
