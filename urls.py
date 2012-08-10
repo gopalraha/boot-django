@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^$', 'application.views.home', name='home'),
+    url(r'^$', 'APPLICATION.views.home', name='home'),
     
     # Comment the admin/doc line below to disable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

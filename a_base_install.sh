@@ -27,14 +27,26 @@ pushd ~
 django-admin.py startproject $project
 
 mkdir ~/$project/$project/static
+cp $cwd/django_icon.png ~/$project/$project/static
 ln -s /usr/lib/python2.7/dist-packages/django/contrib/admin/media ~/$project/$project/static/admin
 
+pushd ~/$project/$project/static/admin/img
+sudo ln -s admin/* .
+sudo ln -s gis/* .
+popd
+
 echo "httpd.conf:"
-sed "s/project/$project/g" < $cwd/httpd.conf | sudo tee /etc/apache2/httpd.conf
+cat $cwd/httpd.conf | \
+	sed "s/HOME/$HOME/g" | \
+	sed "s/PROJECT/$project/g" | \
+	sudo tee /etc/apache2/httpd.conf
 
 mv ~/$project/$project/wsgi.py ~/$project/$project/wsgi.py.bak
 echo "~/$project/$project/wsgi.py"
-sudo sed "s/project/$project/g" < $cwd/wsgi.py | tee ~/$project/$project/wsgi.py
+cat $cwd/wsgi.py | \
+	sed "s/HOME/$HOME/g" | \
+	sed "s/PROJECT/$project/g" | \
+	tee ~/$project/$project/wsgi.py
 
 cd ~/$project
 python manage.py startapp $application
@@ -43,15 +55,21 @@ chmod a+w .
 
 mv ~/$project/$project/urls.py ~/$project/$project/urls.py.bak
 echo "urls.py:"
-sed "s/application/$application/g" < $cwd/urls.py | tee ~/$project/$project/urls.py
+cat $cwd/urls.py | \
+	sed "s/APPLICATION/$application/g" | \
+	tee ~/$project/$project/urls.py
 
 mv ~/$project/$project/settings.py ~/$project/$project/settings.py.bak
 echo "settings.py:"
 cat $cwd/settings.py | \
     sed "s/PROJECT/$project/g" | \
-    sed "s/APPLICATION/$application/g" > \
+    sed "s/APPLICATION/$application/g" | \
     sed "s/mydjangoapp_password/$db_pswd/g" > \
     ~/$project/$project/settings.py 
+
+cp $cwd/views.py ~/$project/$application
+mkdir ~/$project/$application/html
+cp $cwd/index.html ~/$project/$application/html 
 
 echo "*********************************************************"
 echo "****Please cut and paste these lines into Postgres******"
@@ -79,6 +97,9 @@ sudo sh -c 'echo "local   mydjangoappdb     mydjangoapp                         
 sudo service postgresql restart
 
 pushd ~/$project
+# These two lines are needed for GCE
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 python manage.py syncdb
 popd
 
