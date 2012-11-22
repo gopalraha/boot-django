@@ -24,6 +24,8 @@ echo ""
 export cwd=`pwd`
 
 pushd ~
+export home_dir=`pwd`
+
 django-admin.py startproject $project
 
 mkdir ~/$project/$project/static
@@ -35,18 +37,18 @@ sudo ln -s admin/* .
 sudo ln -s gis/* .
 popd
 
-echo "httpd.conf:"
+echo "***************** httpd.conf:"
 cat $cwd/httpd.conf | \
-	sed "s/HOME/$HOME/g" | \
-	sed "s/PROJECT/$project/g" | \
-	sudo tee /etc/apache2/httpd.conf
+        sed "s=HOME=$home_dir=g" | \
+        sed "s=PROJECT=$project=g" | \
+        sudo tee /etc/apache2/httpd.conf
 
 mv ~/$project/$project/wsgi.py ~/$project/$project/wsgi.py.bak
-echo "~/$project/$project/wsgi.py"
+echo "***************** ~/$project/$project/wsgi.py"
 cat $cwd/wsgi.py | \
-	sed "s/HOME/$HOME/g" | \
-	sed "s/PROJECT/$project/g" | \
-	tee ~/$project/$project/wsgi.py
+        sed "s=HOME=$home_dir=g" | \
+        sed "s=PROJECT=$project=g" | \
+        tee ~/$project/$project/wsgi.py
 
 cd ~/$project
 python manage.py startapp $application
@@ -54,18 +56,19 @@ cd $application
 chmod a+w . 
 
 mv ~/$project/$project/urls.py ~/$project/$project/urls.py.bak
-echo "urls.py:"
+echo "***************** urls.py:"
 cat $cwd/urls.py | \
-	sed "s/APPLICATION/$application/g" | \
-	tee ~/$project/$project/urls.py
+        sed "s=APPLICATION=$application=g" | \
+        tee ~/$project/$project/urls.py
 
 mv ~/$project/$project/settings.py ~/$project/$project/settings.py.bak
-echo "settings.py:"
+echo "***************** settings.py:"
 cat $cwd/settings.py | \
-    sed "s/PROJECT/$project/g" | \
-    sed "s/APPLICATION/$application/g" | \
-    sed "s/mydjangoapp_password/$db_pswd/g" > \
-    ~/$project/$project/settings.py 
+        sed "s=HOME=$home_dir=g" | \
+        sed "s=PROJECT=$project=g" | \
+        sed "s=APPLICATION=$application=g" | \
+        sed "s=mydjangoapp_password=$db_pswd=g" > \
+	~/$project/$project/settings.py 
 
 cp $cwd/views.py ~/$project/$application
 mkdir ~/$project/$application/html
@@ -74,8 +77,8 @@ cp $cwd/index.html ~/$project/$application/html
 echo "*********************************************************"
 echo "****Please cut and paste these lines into Postgres******"
 echo "*********************************************************"
-echo "template1=# ALTER USER postgres WITH PASSWORD '$db_pswd';"
-echo "template1=# \q"
+echo "ALTER USER postgres WITH PASSWORD '$db_pswd';"
+echo "\q"
 echo "*********************************************************"
 sudo su postgres -c psql template1
 
@@ -85,10 +88,10 @@ sudo su postgres -c passwd
 echo "*********************************************************"
 echo "****Please cut and paste these lines into Postgres******"
 echo "*********************************************************"
-echo "postgres=# CREATE USER mydjangoapp WITH PASSWORD '$db_pswd';"
-echo "postgres=# create database mydjangoappdb;"
-echo "postgres=# grant all privileges on database mydjangoappdb to mydjangoapp;"
-echo "postgres=# \q"
+echo "CREATE USER mydjangoapp WITH PASSWORD '$db_pswd';"
+echo "create database mydjangoappdb;"
+echo "grant all privileges on database mydjangoappdb to mydjangoapp;"
+echo "\q"
 echo "*********************************************************"
 sudo su postgres -c psql template1
 
