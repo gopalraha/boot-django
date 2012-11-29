@@ -27,7 +27,9 @@ When the script completes, edit `settings.py` appropriately and populate project
 
 If you get the script working on another platform, or another AMI, please send me a pull request.
 
-### You will probably need these adjustments
+### Postscript
+
+You will probably want to make these adjustments on your machine
 
 * Keep the clock synchronized: [Ubuntu Time](https://help.ubuntu.com/community/UbuntuTime)
-* Set up ownership of /var/log/apache2 and any Django loggers to www-data (the Apache user) and ubuntu, respectively. See [this](http://superuser.com/questions/95972/how-do-i-add-a-user-to-multiple-groups-in-ubuntu) for how to.
+* Set up ownership of `/var/log/apache2` and any Django loggers to `www-data` (the Apache user) and `ubuntu`, respectively. See [this](http://superuser.com/questions/95972/how-do-i-add-a-user-to-multiple-groups-in-ubuntu) for how to.
